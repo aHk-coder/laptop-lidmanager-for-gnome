@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Lid Behaviour
+GenericName=Lid Close Settings
+Comment=Choose what closing the laptop lid does
+Exec=lidbehaviour
+Icon=no.finter.LidBehaviour
+Terminal=false
+Categories=Settings;HardwareSettings;GTK;
+Keywords=lid;laptop;suspend;sleep;dock;docking;power;close;monitor;
+StartupNotify=true
+StartupWMClass=no.finter.LidBehaviour

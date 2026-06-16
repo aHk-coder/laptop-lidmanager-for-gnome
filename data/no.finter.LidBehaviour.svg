@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="screen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5b9dff"/>
+      <stop offset="1" stop-color="#2f6fed"/>
+    </linearGradient>
+  </defs>
+  <!-- open laptop lid (screen) -->
+  <rect x="14" y="12" width="36" height="24" rx="3" fill="url(#screen)"/>
+  <rect x="17" y="15" width="30" height="18" rx="1.5" fill="#eaf2ff" opacity="0.92"/>
+  <!-- "do nothing while docked" hint: power dot -->
+  <circle cx="32" cy="24" r="4.2" fill="none" stroke="#2f6fed" stroke-width="2"/>
+  <line x1="32" y1="20.2" x2="32" y2="24" stroke="#2f6fed" stroke-width="2" stroke-linecap="round"/>
+  <!-- laptop base / keyboard deck -->
+  <path d="M8 44 L56 44 L60 52 L4 52 Z" fill="#3a4254"/>
+  <rect x="4" y="50" width="56" height="4" rx="2" fill="#262c39"/>
+  <rect x="26" y="46" width="12" height="2.4" rx="1.2" fill="#5b6072"/>
+</svg>
