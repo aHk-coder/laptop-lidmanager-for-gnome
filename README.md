@@ -19,7 +19,7 @@ Grab the latest `.deb` from the
 page, then:
 
 ```bash
-sudo apt install ./lidbehaviour_1.0.0_all.deb
+sudo apt install ./lidbehaviour_1.0.1_all.deb
 ```
 
 `apt` pulls in the GTK/PyGObject dependencies for you. Remove it later with

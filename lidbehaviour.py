@@ -57,9 +57,18 @@ def power_is_ac():
     return True  # assume plugged in if we cannot tell
 
 
-def schema_is_installed(schema_id):
+def schema_has_key(schema_id, key):
+    """True if the installed schema defines this key.
+
+    GSettings aborts the process if you read a key the schema doesn't
+    define, so every key must be probed before use — GNOME versions differ
+    in which lid keys they ship.
+    """
     src = Gio.SettingsSchemaSource.get_default()
-    return src is not None and src.lookup(schema_id, True) is not None
+    if src is None:
+        return False
+    schema = src.lookup(schema_id, True)
+    return schema is not None and schema.has_key(key)
 
 
 class ActionComboRow:
@@ -121,32 +130,37 @@ class LidBehaviourWindow(Adw.ApplicationWindow):
             description="Pick what happens — just like Windows Power Options.",
         )
         on_ac = power_is_ac()
-        self.ac_row = ActionComboRow(
-            settings, KEY_AC, "Plugged in",
-            "Currently active" if on_ac else "",
-        )
-        self.bat_row = ActionComboRow(
-            settings, KEY_BAT, "On battery",
-            "" if on_ac else "Currently active",
-        )
-        lid_group.add(self.ac_row.row)
-        lid_group.add(self.bat_row.row)
+        if schema_has_key(SCHEMA, KEY_AC):
+            self.ac_row = ActionComboRow(
+                settings, KEY_AC, "Plugged in",
+                "Currently active" if on_ac else "",
+            )
+            lid_group.add(self.ac_row.row)
+        if schema_has_key(SCHEMA, KEY_BAT):
+            self.bat_row = ActionComboRow(
+                settings, KEY_BAT, "On battery",
+                "" if on_ac else "Currently active",
+            )
+            lid_group.add(self.bat_row.row)
         page.add(lid_group)
 
         # --- External monitors ---------------------------------------------
-        ext_group = Adw.PreferencesGroup(title="External monitors")
-        ext_row = Adw.ActionRow(
-            title="Stay awake with an external monitor",
-            subtitle="When a monitor is connected, ignore the lid action above",
-        )
-        self.ext_switch = Gtk.Switch(valign=Gtk.Align.CENTER)
-        # The GSettings key means "suspend EVEN with a monitor", so invert it.
-        self.ext_switch.set_active(not settings.get_boolean(KEY_EXT))
-        self.ext_switch.connect("state-set", self._on_ext_toggle)
-        ext_row.add_suffix(self.ext_switch)
-        ext_row.set_activatable_widget(self.ext_switch)
-        ext_group.add(ext_row)
-        page.add(ext_group)
+        # Not present on every GNOME version, so only show the control when
+        # the key exists (reading a missing key would abort the app).
+        if schema_has_key(SCHEMA, KEY_EXT):
+            ext_group = Adw.PreferencesGroup(title="External monitors")
+            ext_row = Adw.ActionRow(
+                title="Stay awake with an external monitor",
+                subtitle="When a monitor is connected, ignore the lid action above",
+            )
+            self.ext_switch = Gtk.Switch(valign=Gtk.Align.CENTER)
+            # The GSettings key means "suspend EVEN with a monitor", so invert.
+            self.ext_switch.set_active(not settings.get_boolean(KEY_EXT))
+            self.ext_switch.connect("state-set", self._on_ext_toggle)
+            ext_row.add_suffix(self.ext_switch)
+            ext_row.set_activatable_widget(self.ext_switch)
+            ext_group.add(ext_row)
+            page.add(ext_group)
 
         # --- Note ----------------------------------------------------------
         note_group = Adw.PreferencesGroup()
@@ -246,7 +260,7 @@ class LidBehaviourWindow(Adw.ApplicationWindow):
             self._toast("Auto-restore on" if state else "Auto-restore off")
             switch.set_state(state)
         else:
-            self._toast("Service not installed yet — run install.sh")
+            self._toast("Couldn't start the background service")
             switch.set_active(False)
             switch.set_state(False)
         return True  # we set the state explicitly above
@@ -264,7 +278,8 @@ class LidBehaviourApp(Adw.Application):
 
     def do_startup(self):
         Adw.Application.do_startup(self)
-        if schema_is_installed(SCHEMA):
+        # Need the schema *and* at least one lid-action key to be useful.
+        if schema_has_key(SCHEMA, KEY_AC) or schema_has_key(SCHEMA, KEY_BAT):
             self.settings = Gio.Settings.new(SCHEMA)
 
     def do_activate(self):

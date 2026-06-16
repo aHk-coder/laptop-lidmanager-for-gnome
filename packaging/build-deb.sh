@@ -7,7 +7,7 @@
 # Install with:  sudo apt install ./dist/lidbehaviour_<version>_all.deb
 set -euo pipefail
 
-VERSION="${1:-1.0.0}"
+VERSION="${1:-1.0.1}"
 PKG="lidbehaviour"
 ARCH="all"
 APP_ID="no.finter.LidBehaviour"
