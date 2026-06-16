@@ -12,13 +12,35 @@ Set **Plugged in → Do nothing** and you're done.
 
 ## Install
 
+### Download the package (recommended)
+
+Grab the latest `.deb` from the
+[Releases](https://github.com/aHk-coder/laptop-lidmanager-for-gnome/releases)
+page, then:
+
+```bash
+sudo apt install ./lidbehaviour_1.0.0_all.deb
+```
+
+`apt` pulls in the GTK/PyGObject dependencies for you. Remove it later with
+`sudo apt remove lidbehaviour`.
+
+### Or install per-user from source (no root)
+
 ```bash
 ./install.sh
 ```
 
-Then search **“Lid Behaviour”** in your app menu, or run `lidbehaviour`.
-
 Uninstall with `./uninstall.sh` (your settings are left untouched).
+
+### Or build the `.deb` yourself
+
+```bash
+./packaging/build-deb.sh        # writes dist/lidbehaviour_<version>_all.deb
+```
+
+Once installed, search **“Lid Behaviour”** in your app menu, or run
+`lidbehaviour`.
 
 ## Requirements
 
